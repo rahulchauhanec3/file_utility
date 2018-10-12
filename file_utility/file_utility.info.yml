@@ -1,0 +1,6 @@
+name: File Force Download
+description: 'Force your visitors to download requested files.'
+type: module
+package: Other
+version: '8.x-1.1'
+core: 8.x

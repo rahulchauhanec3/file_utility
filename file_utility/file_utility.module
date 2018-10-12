@@ -1,0 +1,79 @@
+<?php
+
+use Drupal\Core\Access\AccessResult;
+/**
+ * Implements hook_file_download().
+ *
+ */
+function file_utility_file_download($uri) {
+  // Get the file record based on the URI. If not in the database just return.
+  $files = \Drupal::entityTypeManager()
+            ->getStorage('file')
+            ->loadByProperties(array('uri' => $uri));
+
+
+  if (count($files)) {
+    foreach ($files as $item) {
+      // Check that the filename is an exact match.
+      if ($item->getFileUri() === $uri) {
+        $file = $item;
+        break;
+      }
+    }
+  }
+  /** @var \Drupal\file\FileInterface $file */
+  if (!isset($file)) {
+    return;
+  }
+
+  // // Stop processing if there are no references in order to avoid returning
+  // // headers for files controlled by other modules. Make an exception for
+  // // temporary files where the host entity has not yet been saved (for example,
+  // // an image preview on a node/add form) in which case, allow download by the
+  // // file's owner.
+  // $references = file_get_file_references($file, NULL, EntityStorageInterface::FIELD_LOAD_CURRENT, 'protected_file');
+  // if (empty($references) && ($file->isPermanent() || $file->getOwnerId() != \Drupal::currentUser()->id())) {
+  //   return;
+  // }
+
+  // // Find out which (if any) entity  fields of this type contain the file and
+  // // fetch the values stored with the field protected_file from the entity.
+  // $values = [];
+  // if (!empty($references)) {
+  //   foreach ($references as $field_name => $entities_type) {
+  //     foreach ($entities_type as $entity_type_id => $entities) {
+  //       foreach ($entities as $entity_id => $entity) {
+  //         if ($entity instanceof FieldableEntityInterface) {
+  //           $values = $entity->{$field_name}->getValue();
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+
+  // Check if the file is mark as protected.
+  // if (!empty($values)) {
+  //   foreach ($values as $value) {
+  //     if ($value['target_id'] == $file->id() && $value['protected_file'] == 1) {
+  //       $current_user = \Drupal::currentUser();
+  //       // Deny download file for current user without permission.
+  //       if (!$current_user->hasPermission('file utility access')) {
+  //         return -1;
+  //       }
+  //     }
+  //   }
+  // }
+
+  // Access is granted.
+  $headers = file_get_content_headers($file);
+  return $headers;
+}
+
+// /*
+//  * @Change file export download permission;
+//  */
+// function file_utility_entity_access($entity, $operation, $account) {
+//   if ($operation == 'view' && !$account->hasPermission('file utility access')) {
+
+//   }
+// }

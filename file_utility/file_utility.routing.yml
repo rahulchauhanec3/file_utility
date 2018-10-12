@@ -1,0 +1,14 @@
+file_utility.filedownload:
+  path: '/filedownload'
+  defaults:
+    _controller: '\Drupal\file_utility\Controller\FileUtilityController::downloadaction'    
+  requirements:
+    _permission: 'access content'
+
+file_utility.downloadform:
+  path: '/form/downloadform'
+  defaults:
+    _form: '\Drupal\file_utility\Form\DownloadForm'
+    _title: 'Please fill to download'
+  requirements:
+    _access: 'TRUE'
